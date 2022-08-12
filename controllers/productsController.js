@@ -35,12 +35,19 @@ const edit = async (req, res) => {
 const remove = async (req, res) => {
   const { params: { id } } = req;
   const product = await productsService.getById(id);
-
   if (!product) return productNotFoundResponse(res);
   
   await productsService.remove(id);
 
   res.status(STATUS.NO_CONTENT).send();
+};
+
+const getByName = async (req, res) => {
+  const { query: { q } } = req;
+  const products = await productsService.getByName(q);
+  return products
+    ? res.status(STATUS.OK).json(products)
+    : productNotFoundResponse(res);
 };
 
 module.exports = { 
@@ -49,4 +56,5 @@ module.exports = {
   add,
   edit,
   remove,
+  getByName,
 };

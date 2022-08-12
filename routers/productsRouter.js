@@ -4,6 +4,8 @@ const validateProduct = require('../middlewares/validateProduct');
 
 const productsRouter = express.Router();
 
+productsRouter.get('/search', productsController.getByName);
+
 productsRouter.get('/', productsController.getAll);
 
 productsRouter.get('/:id', productsController.getById);
