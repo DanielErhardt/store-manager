@@ -38,8 +38,8 @@ const remove = async (id) => {
 
 const getByName = async (name) => {
   const [products] = await connection
-    // .execute('SELECT * FROM StoreManager.products WHERE name LIKE "%?%";', [name]);
     .query(`SELECT * FROM StoreManager.products WHERE name LIKE "%${name}%";`);
+    // .execute('SELECT * FROM StoreManager.products WHERE name LIKE "%?%";', [name]);
   
   return products;
 };
