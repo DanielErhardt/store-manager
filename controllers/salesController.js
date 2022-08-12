@@ -20,8 +20,17 @@ const add = async (req, res) => {
   return res.status(STATUS.CREATED).json(addedSales);
 };
 
+const edit = async (req, res) => {
+  const { params: { id: saleId }, body: products } = req;
+  const editedSale = await salesService.edit({ saleId, products });
+  return editedSale
+    ? res.status(STATUS.OK).json(editedSale)
+    : res.status(STATUS.NOT_FOUND).json({ message: 'Sale not found' });
+};
+
 module.exports = {
   getAll,
   getById,
   add,
+  edit,
 };

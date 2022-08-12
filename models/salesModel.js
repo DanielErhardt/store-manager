@@ -45,8 +45,27 @@ const add = async (sales) => {
   };
 };
 
+const edit = async ({ saleId, products }) => {
+  const sale = await getById(saleId);
+  if (!sale) return null;
+
+  products.forEach(async ({ productId, quantity }) => {
+    await connection.query(`
+      UPDATE StoreManager.sales_products
+      SET quantity = ?
+      WHERE product_id = ?;
+    `, [quantity, productId]);
+  });
+
+  return {
+    saleId,
+    itemsUpdated: products,
+  };
+};
+
 module.exports = {
   getAll,
   getById,
   add,
+  edit,
 };
