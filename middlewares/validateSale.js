@@ -14,10 +14,10 @@ const verifyDatabaseProductsId = async (idList) => {
   //   return new Error(STATUS.NOT_FOUND, 'Product not found');
   // }
 
-  const [result] = await connection
+  const [[result]] = await connection
     .query('SELECT COUNT(*) FROM StoreManager.products AS P WHERE P.id IN (?)', [idList]);
   
-  if (result[0]['COUNT(*)'] !== idList.length) {
+  if (result['COUNT(*)'] !== idList.length) {
     return new Error(STATUS.NOT_FOUND, 'Product not found');
   }
 };
