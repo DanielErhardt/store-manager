@@ -12,4 +12,6 @@ salesRouter.post('/', validateSale, salesController.add);
 
 salesRouter.put('/:id', validateSale, salesController.edit);
 
+salesRouter.delete('/:id', salesController.remove);
+
 module.exports = salesRouter;

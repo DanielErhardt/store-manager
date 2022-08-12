@@ -63,9 +63,22 @@ const edit = async ({ saleId, products }) => {
   };
 };
 
+const remove = async (id) => {
+  await connection.query(`
+    DELETE FROM StoreManager.sales_products
+    WHERE sale_id = ?;
+  `, [id]);
+
+  await connection.query(`
+  DELETE FROM StoreManager.sales
+  WHERE id = ?;
+  `, [id]);
+};
+
 module.exports = {
   getAll,
   getById,
   add,
   edit,
+  remove,
 };

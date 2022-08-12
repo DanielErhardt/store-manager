@@ -28,9 +28,20 @@ const edit = async (req, res) => {
     : res.status(STATUS.NOT_FOUND).json({ message: 'Sale not found' });
 };
 
+const remove = async (req, res) => {
+  const { params: { id } } = req;
+  const sale = await salesService.getById(id);
+  if (!sale) return res.status(STATUS.NOT_FOUND).json({ message: 'Sale not found' });
+
+  await salesService.remove(id);
+
+  res.status(STATUS.NO_CONTENT).send();
+};
+
 module.exports = {
   getAll,
   getById,
   add,
   edit,
+  remove,
 };
