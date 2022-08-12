@@ -44,20 +44,11 @@ const validateSale = async (req, _res, next) => {
   for (let i = 0; i < sales.length; i += 1) {
     const { productId, quantity } = sales[i];
     const error = validateQuantity(quantity) || validateProductId(productId);
-    if (error) {
-      next(error);
-      return;
-    }
+    if (error) next(error);
   } 
 
   const idError = await verifyDatabaseProductsId(sales.map(({ productId }) => productId));
-
-  if (idError) {
-    next(idError);
-    return;
-  }
-
-  next();
+  return idError ? next(idError) : next();
 };
 
 module.exports = validateSale;
