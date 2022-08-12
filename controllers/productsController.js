@@ -1,6 +1,9 @@
 const productsService = require('../services/productsService');
 const STATUS = require('../utilities/httpStatus');
 
+const productNotFoundResponse = (res) => res
+  .status(STATUS.NOT_FOUND).json({ message: 'Product not found' });
+
 const getAll = async (_req, res) => {
   const products = await productsService.getAll();
   return res.status(STATUS.OK).json(products);
@@ -11,7 +14,7 @@ const getById = async (req, res) => {
   const product = await productsService.getById(id);
   return product
     ? res.status(STATUS.OK).json(product)
-    : res.status(STATUS.NOT_FOUND).json({ message: 'Product not found' });
+    : productNotFoundResponse(res);
 };
 
 const add = async (req, res) => {
@@ -23,7 +26,7 @@ const add = async (req, res) => {
 const edit = async (req, res) => {
   const { params: { id }, body: { name } } = req;
   const product = await productsService.getById(id);
-  if (!product) return res.status(STATUS.NOT_FOUND).json({ message: 'Product not found' });
+  if (!product) return productNotFoundResponse(res);
 
   const editedProduct = await productsService.edit({ id, name });
   return res.status(STATUS.OK).json(editedProduct);
@@ -33,7 +36,7 @@ const remove = async (req, res) => {
   const { params: { id } } = req;
   const product = await productsService.getById(id);
 
-  if (!product) return res.status(STATUS.NOT_FOUND).json({ message: 'Product not found' });
+  if (!product) return productNotFoundResponse(res);
   
   await productsService.remove(id);
 
