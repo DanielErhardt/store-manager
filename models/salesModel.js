@@ -13,16 +13,18 @@ const getAll = async () => {
 };
 
 const getById = async (id) => {
-  const [[{ date }]] = await connection
+  const [[sale]] = await connection
     .query('SELECT * FROM StoreManager.sales WHERE id = ?;', [id]);
+  
+  if (!sale) return null;
   
   const [productSales] = await connection
     .query('SELECT * FROM StoreManager.sales_products WHERE sale_id = ?;', [id]);
 
-  return productSales.map((sale) => ({
-    date,
-    productId: sale.product_id,
-    quantity: sale.quantity,
+  return productSales.map((productSale) => ({
+    date: sale.date,
+    productId: productSale.product_id,
+    quantity: productSale.quantity,
   }));
 };
 
