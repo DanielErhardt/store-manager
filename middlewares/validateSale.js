@@ -1,19 +1,15 @@
 const error = require('../utilities/expressError');
 
 const validateQuantity = (quantity) => {
-  if (typeof quantity === 'undefined') {
-    return new Error(STATUS.BAD_REQUEST, '"quantity" is required');
-  }
+  if (typeof quantity === 'undefined') return error.badRequest('"quantity" is required');
 
   if (quantity < 1) {
-    return new Error(STATUS.UNPROCESSABLE_ENTITY, '"quantity" must be greater than or equal to 1');
+    return error.unprocessableEntity('"quantity" must be greater than or equal to 1');
   }
 };
 
 const validateProductId = (productId) => {
-  if (!productId) {
-    return new Error(STATUS.BAD_REQUEST, '"productId" is required');
-  }
+  if (!productId) return error.badRequest('"productId" is required');
 };
 
 const validateSale = async (req, _res, next) => {
@@ -21,12 +17,11 @@ const validateSale = async (req, _res, next) => {
 
   for (let i = 0; i < sales.length; i += 1) {
     const { productId, quantity } = sales[i];
-    const error = validateQuantity(quantity) || validateProductId(productId);
-    if (error) next(error);
+    const validationError = validateQuantity(quantity) || validateProductId(productId);
+    if (validationError) next(validationError);
   } 
 
-  const idError = await verifyDatabaseProductsId(sales.map(({ productId }) => productId));
-  return idError ? next(idError) : next();
+  next();
 };
 
 module.exports = validateSale;
