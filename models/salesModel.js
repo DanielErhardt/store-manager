@@ -18,44 +18,41 @@ const getAll = async () => {
   const [sales] = await connection.query('SELECT * FROM StoreManager.sales;');
   const [productSales] = await connection.query('SELECT * FROM StoreManager.sales_products;');
 
-  return productSales.map((prodSale) => ({
-    saleId: prodSale.sale_id,
-    date: sales.find((sale) => sale.id === prodSale.sale_id).date,
-    productId: prodSale.product_id,
-    quantity: prodSale.quantity,
-  }));
-};
-
-const getById = async (id) => {
-  const [[sale]] = await connection
-    .query('SELECT * FROM StoreManager.sales WHERE id = ?;', [id]);
-  
-  if (!sale) return null;
-  
-  const [productSales] = await connection
-    .query('SELECT * FROM StoreManager.sales_products WHERE sale_id = ?;', [id]);
-
   return productSales.map((productSale) => ({
-    date: sale.date,
+    saleId: productSale.sale_id,
+    date: sales.find((sale) => sale.id === productSale.sale_id).date,
     productId: productSale.product_id,
     quantity: productSale.quantity,
   }));
 };
 
-const add = async (sales) => {
+const getById = async (saleId) => {
+  const [[{ date }]] = await connection
+    .query('SELECT * FROM StoreManager.sales WHERE id = ?;', [saleId]);
+  
+  const [productSales] = await connection
+    .query('SELECT * FROM StoreManager.sales_products WHERE sale_id = ?;', [saleId]);
+
+  return productSales.map((productSale) => ({
+    date,
+    productId: productSale.product_id,
+    quantity: productSale.quantity,
+  }));
+};
+
+const add = async (saleProducts) => {
   const [{ insertId: saleId }] = await connection
     .query('INSERT INTO StoreManager.sales (date) VALUES (NOW())');
 
-  sales.forEach(async (sale) => {
-    const { productId, quantity } = sale;
-    await connection.query(`
+  const queries = saleProducts.map(({ productId, quantity }) => connection.query(`
       INSERT INTO StoreManager.sales_products (sale_id, product_id, quantity) VALUES (?, ?, ?);
-    `, [saleId, productId, quantity]);
-  });
+    `, [saleId, productId, quantity]));
+
+  await Promise.all(queries);
 
   return {
     id: saleId,
-    itemsSold: sales,
+    itemsSold: saleProducts,
   };
 };
 
@@ -63,14 +60,16 @@ const edit = async ({ saleId, products }) => {
   const sale = await getById(saleId);
   if (!sale) return null;
 
-  products.forEach(async ({ productId, quantity }) => {
-    await connection.query(`
+  const queries = products.map(({ productId, quantity }) => (
+    connection.query(`
       UPDATE StoreManager.sales_products
       SET quantity = ?
       WHERE product_id = ?;
-    `, [quantity, productId]);
-  });
-
+    `, [quantity, productId])
+  ));
+  
+  await Promise.all(queries);
+  
   return {
     saleId,
     itemsUpdated: products,
@@ -95,4 +94,6 @@ module.exports = {
   add,
   edit,
   remove,
+  saleProductsExist,
+  saleExists,
 };
