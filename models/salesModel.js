@@ -9,14 +9,14 @@ const saleProductsExist = async (saleProducts) => {
 
 const saleExists = async (saleId) => {
   const [[saleResult]] = await connection
-    .query('SELECT * FROM StoreManager.sales WHERE id = ?;', [saleId]);
+    .execute('SELECT * FROM StoreManager.sales WHERE id = ?;', [saleId]);
   
   return saleResult !== undefined;
 };
 
 const getAll = async () => {
-  const [sales] = await connection.query('SELECT * FROM StoreManager.sales;');
-  const [productSales] = await connection.query('SELECT * FROM StoreManager.sales_products;');
+  const [sales] = await connection.execute('SELECT * FROM StoreManager.sales;');
+  const [productSales] = await connection.execute('SELECT * FROM StoreManager.sales_products;');
 
   return productSales.map((productSale) => ({
     saleId: productSale.sale_id,
@@ -28,10 +28,10 @@ const getAll = async () => {
 
 const getById = async (saleId) => {
   const [[{ date }]] = await connection
-    .query('SELECT * FROM StoreManager.sales WHERE id = ?;', [saleId]);
+    .execute('SELECT * FROM StoreManager.sales WHERE id = ?;', [saleId]);
   
   const [productSales] = await connection
-    .query('SELECT * FROM StoreManager.sales_products WHERE sale_id = ?;', [saleId]);
+    .execute('SELECT * FROM StoreManager.sales_products WHERE sale_id = ?;', [saleId]);
 
   return productSales.map((productSale) => ({
     date,
@@ -42,9 +42,9 @@ const getById = async (saleId) => {
 
 const add = async (saleProducts) => {
   const [{ insertId: saleId }] = await connection
-    .query('INSERT INTO StoreManager.sales (date) VALUES (NOW())');
+    .execute('INSERT INTO StoreManager.sales (date) VALUES (NOW())');
 
-  const queries = saleProducts.map(({ productId, quantity }) => connection.query(`
+  const queries = saleProducts.map(({ productId, quantity }) => connection.execute(`
       INSERT INTO StoreManager.sales_products (sale_id, product_id, quantity) VALUES (?, ?, ?);
     `, [saleId, productId, quantity]));
 
@@ -61,7 +61,7 @@ const edit = async ({ saleId, products }) => {
   if (!sale) return null;
 
   const queries = products.map(({ productId, quantity }) => (
-    connection.query(`
+    connection.execute(`
       UPDATE StoreManager.sales_products
       SET quantity = ?
       WHERE product_id = ?;
