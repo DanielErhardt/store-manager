@@ -1,45 +1,35 @@
+const rescue = require('express-rescue');
 const salesService = require('../services/salesService');
-const STATUS = require('../utilities/httpStatus');
-
-const saleNotFoundResponse = (res) => res
-  .status(STATUS.NOT_FOUND).json({ message: 'Sale not found' });
+const httpStatus = require('../utilities/httpStatus');
 
 const getAll = async (_req, res) => {
   const sales = await salesService.getAll();
-  return res.status(STATUS.OK).json(sales);
+  return res.status(httpStatus.OK).json(sales);
 };
 
-const getById = async (req, res) => {
+const getById = rescue(async (req, res) => {
   const { params: { id } } = req;
   const sale = await salesService.getById(id);
-  return sale
-    ? res.status(STATUS.OK).json(sale)
-    : saleNotFoundResponse(res);
-};
+  return res.status(httpStatus.OK).json(sale);
+});
 
-const add = async (req, res) => {
-  const { body: sales } = req;
-  const addedSales = await salesService.add(sales);
-  return res.status(STATUS.CREATED).json(addedSales);
-};
+const add = rescue(async (req, res) => {
+  const { body: sale } = req;
+  const addResult = await salesService.add(sale);
+  return res.status(httpStatus.CREATED).json(addResult);
+});
 
-const edit = async (req, res) => {
+const edit = rescue(async (req, res) => {
   const { params: { id: saleId }, body: products } = req;
-  const editedSale = await salesService.edit({ saleId, products });
-  return editedSale
-    ? res.status(STATUS.OK).json(editedSale)
-    : saleNotFoundResponse(res);
-};
+  const editResult = await salesService.edit({ saleId, products });
+  return res.status(httpStatus.OK).json(editResult);
+});
 
-const remove = async (req, res) => {
+const remove = rescue(async (req, res) => {
   const { params: { id } } = req;
-  const sale = await salesService.getById(id);
-  if (!sale) return saleNotFoundResponse(res);
-
-  await salesService.remove(id);
-
-  res.status(STATUS.NO_CONTENT).send();
-};
+  await salesService.remove(id);  
+  return res.status(httpStatus.NO_CONTENT).send();
+});
 
 module.exports = {
   getAll,
