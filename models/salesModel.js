@@ -1,16 +1,8 @@
 const connection = require('./connection');
 
-const saleProductsExist = async (saleProducts) => {
-  const idList = saleProducts.map(({ productId }) => productId);
-  const [[result]] = await connection
-    .query('SELECT COUNT(*) FROM StoreManager.products WHERE id IN (?)', [idList]); 
-  return result['COUNT(*)'] === idList.length;
-};
-
 const saleExists = async (saleId) => {
   const [[saleResult]] = await connection
     .execute('SELECT * FROM StoreManager.sales WHERE id = ?;', [saleId]);
-  
   return saleResult !== undefined;
 };
 
@@ -89,6 +81,5 @@ module.exports = {
   add,
   edit,
   remove,
-  saleProductsExist,
   saleExists,
 };

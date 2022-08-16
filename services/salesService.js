@@ -1,4 +1,5 @@
 const salesModel = require('../models/salesModel');
+const productsModel = require('../models/productsModel');
 const error = require('../utilities/expressError');
 
 const getAll = async () => salesModel.getAll();
@@ -10,7 +11,8 @@ const getById = async (saleId) => {
 };
 
 const add = async (saleProducts) => {
-  const productsExist = await salesModel.saleProductsExist(saleProducts);
+  const idList = saleProducts.map((product) => product.productId);
+  const productsExist = await productsModel.allProductsExist(idList);
   if (!productsExist) throw error.productNotFound;
   return salesModel.add(saleProducts);
 };
@@ -21,7 +23,8 @@ const edit = async (sale) => {
   const saleExists = await salesModel.saleExists(saleId);
   if (!saleExists) throw error.saleNotFound;
   
-  const productsExist = await salesModel.saleProductsExist(products);
+  const idList = products.map((product) => product.productId);
+  const productsExist = await productsModel.allProductsExist(idList);
   if (!productsExist) throw error.productNotFound;
 
   return salesModel.edit(sale);
