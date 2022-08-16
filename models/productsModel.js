@@ -44,6 +44,11 @@ const getByName = async (name) => {
   return products;
 };
 
+const productExists = async (productId) => {
+  const product = await getById(productId);
+  return product !== undefined;
+};
+
 module.exports = {
   getAll,
   getById,
@@ -51,4 +56,5 @@ module.exports = {
   edit,
   remove,
   getByName,
+  productExists,
 };
