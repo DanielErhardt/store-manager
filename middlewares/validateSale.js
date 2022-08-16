@@ -1,26 +1,4 @@
-const connection = require('../models/connection');
-const STATUS = require('../utilities/httpStatus');
-const Error = require('../classes/CustomError');
-
-const verifyDatabaseProductsId = async (idList) => {
-  // const mappedIds = idList.map(async (id) => {
-  //   const [result] = await connection
-  //     .query('SELECT * FROM StoreManager.products AS P WHERE P.id = ?;', [id]);
-  //   return result.length > 0;
-  // });
-
-  // const resolved = await Promise.all(mappedIds);
-  // if (resolved.some((condition) => !condition)) {
-  //   return new Error(STATUS.NOT_FOUND, 'Product not found');
-  // }
-
-  const [[result]] = await connection
-    .query('SELECT COUNT(*) FROM StoreManager.products AS P WHERE P.id IN (?)', [idList]);
-  
-  if (result['COUNT(*)'] !== idList.length) {
-    return new Error(STATUS.NOT_FOUND, 'Product not found');
-  }
-};
+const error = require('../utilities/expressError');
 
 const validateQuantity = (quantity) => {
   if (typeof quantity === 'undefined') {
