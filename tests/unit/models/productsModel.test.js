@@ -84,6 +84,19 @@ describe('Running all tests for the productsModel file.', () => {
         });
       });
     });
+
+    describe('When there are no product with matching names', () => {
+      const searchTerm = 'xablau';
+
+      before(() => sinon.stub(connection, 'execute')
+        .resolves([mocks.selectProductsWhereNameLike(searchTerm), []]))
+      after(() => connection.execute.restore());
+      
+      it('it returns an empty array.', async () => {
+        const searchResult = await productsModel.getByName(searchTerm);
+        expect(searchResult).to.be.an('array').that.is.empty;
+      });
+    })
   });
 
   describe('Tests the productExists function.', () => {
