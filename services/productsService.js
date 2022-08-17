@@ -22,7 +22,7 @@ const edit = async (product) => {
 const remove = async (productId) => {
   const productExists = await productsModel.productExists(productId);
   if (!productExists) throw error.productNotFound;
-  return productsModel.remove(productId);
+  await productsModel.remove(productId);
 };
 
 const getByName = async (productName) => {
