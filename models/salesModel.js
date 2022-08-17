@@ -9,7 +9,6 @@ const saleExists = async (saleId) => {
 const getAll = async () => {
   const [sales] = await connection.execute('SELECT * FROM StoreManager.sales;');
   const [productSales] = await connection.execute('SELECT * FROM StoreManager.sales_products;');
-
   return productSales.map((productSale) => ({
     saleId: productSale.sale_id,
     date: sales.find((sale) => sale.id === productSale.sale_id).date,
@@ -19,14 +18,14 @@ const getAll = async () => {
 };
 
 const getById = async (saleId) => {
-  const [[{ date }]] = await connection
+  const [[sale]] = await connection
     .execute('SELECT * FROM StoreManager.sales WHERE id = ?;', [saleId]);
   
   const [productSales] = await connection
     .execute('SELECT * FROM StoreManager.sales_products WHERE sale_id = ?;', [saleId]);
 
   return productSales.map((productSale) => ({
-    date,
+    date: sale.date,
     productId: productSale.product_id,
     quantity: productSale.quantity,
   }));
@@ -48,10 +47,8 @@ const add = async (saleProducts) => {
   };
 };
 
-const edit = async ({ saleId, products }) => {
-  const sale = await getById(saleId);
-  if (!sale) return null;
-
+const edit = async (editedSale) => {
+  const { saleId, products } = editedSale;  
   const queries = products.map(({ productId, quantity }) => (
     connection.execute(`
       UPDATE StoreManager.sales_products

@@ -10,7 +10,7 @@ const getById = async (productId) => {
   return productsModel.getById(productId);
 };
 
-const add = async (product) => productsModel.add(product);
+const add = async (productName) => productsModel.add(productName);
 
 const edit = async (product) => {
   const { id } = product;

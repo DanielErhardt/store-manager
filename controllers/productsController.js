@@ -14,7 +14,7 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   const { body: { name } } = req;
-  const addedProduct = await productsService.add({ name });
+  const addedProduct = await productsService.add(name);
   return res.status(httpStatus.CREATED).json(addedProduct);
 };
 
