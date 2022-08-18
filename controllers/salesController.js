@@ -27,7 +27,7 @@ const edit = async (req, res) => {
 const remove = async (req, res) => {
   const { params: { id } } = req;
   await salesService.remove(id);  
-  return res.status(httpStatus.NO_CONTENT).send();
+  return res.status(httpStatus.NO_CONTENT).json();
 };
 
 module.exports = {
