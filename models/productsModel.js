@@ -37,7 +37,6 @@ const edit = async ({ id, name }) => {
   SET name = ?
   WHERE id = ?;
   `, [name, id]);
-  
   return { id, name };
 };
 
@@ -51,7 +50,6 @@ const remove = async (id) => {
 const getByName = async (name) => {
   const [products] = await connection
     .execute('SELECT * FROM StoreManager.products WHERE name LIKE ?;', [`%${name}%`]);
-  
   return products;
 };
 

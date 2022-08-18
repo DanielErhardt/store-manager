@@ -9,7 +9,7 @@ const expressError = require('../../../utilities/expressError');
 
 describe('Running all tests for the productsService file.', () => {
   describe('Tests the getAll function.', () => {
-    describe('When there is no product registered', () => {
+    describe('When there are no products registered', () => {
       before(() => sinon.stub(connection, 'execute').resolves([[], []]));
       after(() => connection.execute.restore());
 
@@ -34,6 +34,7 @@ describe('Running all tests for the productsService file.', () => {
   describe('Tests the getById function.', () => {
     describe('When there is no product with the provided id', () => {
       const providedId = 9999;
+
       before(() => sinon.stub(connection, 'execute')
         .resolves([mocks.selectProductWhereIdEquals(providedId), []]));
       after(() => connection.execute.restore());
@@ -117,6 +118,7 @@ describe('Running all tests for the productsService file.', () => {
       before(() => sinon.stub(connection, 'execute')
         .resolves([mocks.resultSetHeader, undefined]));
       after(() => connection.execute.restore());
+      
       it('it returns an object containg the added product', async () => {
         const addedProduct = await productsService.add(productName);
         expect(addedProduct).to.be.an('object').that.deep.equals({ id: insertId, name: productName });

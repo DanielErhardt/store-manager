@@ -32,6 +32,7 @@ describe('Running all tests for the productsModel file.', () => {
   describe('Tests the getById function.', () => {
     describe('When there is no product with the provided id', () => {
       const providedId = 9999;
+
       before(() => sinon.stub(connection, 'execute')
         .resolves([mocks.selectProductWhereIdEquals(providedId), []]));
       after(() => connection.execute.restore());
@@ -65,20 +66,22 @@ describe('Running all tests for the productsModel file.', () => {
       after(() => connection.execute.restore());
       
       it('it returns an array with all products.', async () => {
-        const searchedProducts = await productsModel.getByName(searchTerm);
-        expect(searchedProducts).to.be.an('array').that.is.not.empty;
+        const searchResult = await productsModel.getByName(searchTerm);
+        expect(searchResult).to.be.an('array').that.is.not.empty;
       });
     });
 
     describe('When a string with a partial name is passed', () => {
       const searchTerm = 'mar';
+
       before(() => sinon.stub(connection, 'execute')
         .resolves([mocks.selectProductsWhereNameLike(searchTerm), []]));
       after(() => connection.execute.restore());
+
       it('it returns an array containg products with matching names.', async () => {
-        const searchedProducts = await productsModel.getByName(searchTerm);
-        expect(searchedProducts).to.be.an('array').that.is.not.empty;
-        searchedProducts.forEach((product) => {
+        const searchResult = await productsModel.getByName(searchTerm);
+        expect(searchResult).to.be.an('array').that.is.not.empty;
+        searchResult.forEach((product) => {
           expect(product).to.contain.all.keys('name', 'id');
           expect(product.name.toLowerCase().includes(searchTerm)).to.be.true;
         });
@@ -143,9 +146,11 @@ describe('Running all tests for the productsModel file.', () => {
 
     describe('When all products in the list are cotained in the database', () => {
       const idList = [1, 2, 3];
+
       before(() => sinon.stub(connection, 'query')
         .resolves([mocks.selectCountProductsWhereIdIn(idList), []]));
       after(() => connection.query.restore());
+
       it('it returns true', async () => {
         const productsExist = await productsModel.allProductsExist(idList);
         expect(productsExist).to.equal(true);
@@ -161,6 +166,7 @@ describe('Running all tests for the productsModel file.', () => {
       before(() => sinon.stub(connection, 'execute')
         .resolves([mocks.resultSetHeader, undefined]));
       after(() => connection.execute.restore());
+
       it('it returns an object containg the added product', async () => {
         const addedProduct = await productsModel.add(productName);
         expect(addedProduct).to.be.an('object').that.deep.equals({ id: insertId, name: productName });
@@ -170,8 +176,10 @@ describe('Running all tests for the productsModel file.', () => {
 
   describe('Tests the edit function.', () => {
     describe('When a product is passed', () => {
-      before(() => sinon.stub(connection, 'execute').resolves([{}, undefined]));
+      before(() => sinon.stub(connection, 'execute')
+        .resolves([{}, undefined]));
       after(() => connection.execute.restore());
+
       it('it returns the edited product.', async () => {
         const editedProduct = { id: 1, name: 'Thor\'s Screwdriver' }
         const returnedProduct = await productsModel.edit(editedProduct)
@@ -184,6 +192,7 @@ describe('Running all tests for the productsModel file.', () => {
     describe('When a product is removed', () => {
       before(() => sinon.stub(connection, 'execute').resolves([{}, undefined]));
       after(() => connection.execute.restore());
+
       it('it returns undefined.', async () => {
         const removalResult = await productsModel.remove(1);
         expect(removalResult).to.equal(undefined);

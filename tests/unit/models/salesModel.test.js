@@ -48,7 +48,7 @@ describe('Running all tests for the salesModel file.', () => {
       });
     });
   
-    describe('When there is one or more sales with the provided id', () => {
+    describe('When there is a sale with the provided id', () => {
        const saleId = 1;
 
       before(() => sinon.stub(connection, 'execute')
@@ -57,7 +57,7 @@ describe('Running all tests for the salesModel file.', () => {
       after(() => connection.execute.restore());
 
       it('it returns an array of objects with the properties "productId", "quantity" and "date".', async () => {
-        const sales = await salesModel.getById(1);
+        const sales = await salesModel.getById(saleId);
         expect(sales).to.be.an('array').that.is.not.empty;
         sales.forEach((sale) => expect(sale).to.be.an('object').that.includes.all.keys('productId', 'quantity', 'date'));          
       });
@@ -67,23 +67,27 @@ describe('Running all tests for the salesModel file.', () => {
   describe('Tests the saleExists function.', () => {
     describe('When there is no sale with the provided id', () => {
       const saleId = 9999;
+
       before(() => sinon.stub(connection, 'execute')
         .resolves([mocks.selectSaleWhereIdEquals(saleId), []]));
       after(() => connection.execute.restore());
+
       it('it returns false', async () => {
-        const productExists = await salesModel.saleExists(saleId);
-        expect(productExists).to.equal(false);
+        const saleExists = await salesModel.saleExists(saleId);
+        expect(saleExists).to.equal(false);
       });
     });
 
     describe('When a sale with the provided id is found', () => {
       const saleId = 1;
+
       before(() => sinon.stub(connection, 'execute')
         .resolves([mocks.selectSaleWhereIdEquals(saleId), []]));
       after(() => connection.execute.restore());
+
       it('it returns true', async () => {
-        const productExists = await salesModel.saleExists(saleId);
-        expect(productExists).to.equal(true);
+        const saleExists = await salesModel.saleExists(saleId);
+        expect(saleExists).to.equal(true);
       });
     });
   });
@@ -93,11 +97,13 @@ describe('Running all tests for the salesModel file.', () => {
       const { insertId } = mocks.resultSetHeader;
       const soldProducts = [{ id: 1, quantity: 10 }, { id: 2, quantity: 4 }];
 
-      before(() => sinon.stub(connection, 'execute').resolves([mocks.resultSetHeader, undefined]));
+      before(() => sinon.stub(connection, 'execute')
+        .resolves([mocks.resultSetHeader, undefined]));
       after(() => connection.execute.restore());
+
       it('it returns an object containg the registered sale', async () => {
-        const addedProduct = await salesModel.add(soldProducts);
-        expect(addedProduct).to.be.an('object').that.deep.equals({ id: insertId, itemsSold: soldProducts });
+        const addedSale = await salesModel.add(soldProducts);
+        expect(addedSale).to.be.an('object').that.deep.equals({ id: insertId, itemsSold: soldProducts });
       });
     });
   });
@@ -106,10 +112,11 @@ describe('Running all tests for the salesModel file.', () => {
     describe('When a sale is passed for editing', () => {
       before(() => sinon.stub(connection, 'execute').resolves([mocks.resultSetHeader, undefined]));
       after(() => connection.execute.restore());
+
       it('it returns the edited sale.', async () => {
         const editedSale = { saleId: 1, products : [{ productId: 1, quantity: 7 }]}
-        const returnedProduct = await salesModel.edit(editedSale)
-        expect(returnedProduct).to.be.an('object')
+        const returnedSale = await salesModel.edit(editedSale)
+        expect(returnedSale).to.be.an('object')
           .that.deep.equals({ saleId: editedSale.saleId, itemsUpdated: editedSale.products });
       });
     });
@@ -119,6 +126,7 @@ describe('Running all tests for the salesModel file.', () => {
     describe('When a sale is removed', () => {
       before(() => sinon.stub(connection, 'execute').resolves([mocks.resultSetHeader, undefined]));
       after(() => connection.execute.restore());
+
       it('it returns undefined.', async () => {
         const removalResult = await salesModel.remove(1);
         expect(removalResult).to.equal(undefined);
