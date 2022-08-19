@@ -1,190 +1,113 @@
-const { expect } = require('chai');
+const chai = require('chai');
 const { describe, it } = require('mocha');
 const sinon = require('sinon');
 const connection = require('../../../models/connection');
 const productsService = require('../../../services/productsService');
 const mocks = require('../../mocks/queriesMocks');
-
 const expressError = require('../../../utilities/expressError');
 
+chai.use(require('chai-as-promised'));
+const { expect } = chai;
+
 describe('Running all tests for the productsService file.', () => {
+  afterEach(() => sinon.restore());
+
   describe('Tests the getAll function.', () => {
-    describe('When there are no products registered', () => {
-      before(() => sinon.stub(connection, 'execute').resolves([[], []]));
-      after(() => connection.execute.restore());
-
-      it('it returns an empty array', async () => {
-        const productsList = await productsService.getAll();
-        expect(productsList).to.be.an('array').that.is.empty;
-      });
+    it('If there\'s one or more products in the database it returns an array of objects with the properties "id" and "name",', async () => {
+      sinon.stub(connection, 'execute').resolves([mocks.selectAllProducts(), []]);
+      const productsList = await productsService.getAll();
+      expect(productsList).to.be.an('array').that.is.not.empty;
+      productsList.forEach((product) => expect(product).to.be.an('object').include.all.keys('id', 'name'));
     });
-  
-    describe('When there are products registered', () => {
-      before(() => sinon.stub(connection, 'execute').resolves([mocks.selectAllProducts(), []]));
-      after(() => connection.execute.restore());
 
-      it('it returns an array of objects containing the properties "id" and "name".', async () => {
-        const productsList = await productsService.getAll();
-        expect(productsList).to.be.an('array').that.is.not.empty;
-        productsList.forEach((product) => expect(product).to.be.an('object').include.all.keys('id', 'name'));
-      });
+    it('otherwise it returns an empty array.', async () => {
+      sinon.stub(connection, 'execute').resolves([[], []]);
+      expect(await productsService.getAll()).to.be.an('array').that.is.empty;
     });
   });
 
   describe('Tests the getById function.', () => {
-    describe('When there is no product with the provided id', () => {
-      const providedId = 9999;
-
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductWhereIdEquals(providedId), []]));
-      after(() => connection.execute.restore());
-
-      it('it throws a "Product not found" error.', async () => {
-        try {
-          await productsService.getById(providedId);
-        } catch (error) {
-          expect(error).to.be.an('object').that.deep.equals(expressError.productNotFound);
-        }
-      });
-    });
-  
-    describe('When there is a product with the provided id', () => {
+    it('If a product with the id exists it returns an object with the properties "id" and "name",', async () => {
       const providedId = 1;
+      sinon.stub(connection, 'execute').resolves([mocks.selectProductWhereIdEquals(providedId), []]);
+      const product = await productsService.getById(providedId);
+      expect(product).to.be.an('object').that.includes.all.keys('id', 'name');
+    });
 
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductWhereIdEquals(providedId), []]));
-      after(() => connection.execute.restore());
-
-      it('it returns an object with the properties "id" and "name".,', async () => {
-        const product = await productsService.getById(providedId);
-        expect(product).to.be.an('object').that.includes.all.keys('id', 'name');
-      });
+    it('otherwise it throws a "Product not found" error.', async () => {
+      const providedId = 9999;
+      sinon.stub(connection, 'execute').resolves([mocks.selectProductWhereIdEquals(providedId), []]);
+      await expect(productsService.getById(providedId)).to.be.rejectedWith(expressError.productNotFound.message);
     });
   });
 
   describe('Tests the getByName function.', () => {
-    describe('When an empty string is passed', () => {
+    it('If the search term is an empty string it returns an array with all products.', async () => {
       const searchTerm = '';
-
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductsWhereNameLike(searchTerm), []]));
-      after(() => connection.execute.restore());
-      
-      it('it returns an array with all products.', async () => {
-        const searchedProducts = await productsService.getByName(searchTerm);
-        expect(searchedProducts).to.be.an('array').that.is.not.empty;
-      });
+      sinon.stub(connection, 'execute').resolves([mocks.selectProductsWhereNameLike(searchTerm), []]);
+      expect(await productsService.getByName(searchTerm)).to.be.an('array').that.is.not.empty;
     });
 
-    describe('When a string with a partial name is passed', () => {
+    it('If the search term is contained in one or more product names it returns an array containg containing them,', async () => {
       const searchTerm = 'mar';
-
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductsWhereNameLike(searchTerm), []]));
-      after(() => connection.execute.restore());
-
-      it('it returns an array containg products with matching names.', async () => {
-        const searchedProducts = await productsService.getByName(searchTerm);
-        expect(searchedProducts).to.be.an('array').that.is.not.empty;
-        searchedProducts.forEach((product) => {
-          expect(product).to.contain.all.keys('name', 'id');
-          expect(product.name.toLowerCase().includes(searchTerm)).to.be.true;
-        });
+      sinon.stub(connection, 'execute').resolves([mocks.selectProductsWhereNameLike(searchTerm), []]);
+      const searchedProducts = await productsService.getByName(searchTerm);
+      expect(searchedProducts).to.be.an('array').that.is.not.empty;
+      searchedProducts.forEach((product) => {
+        expect(product).to.contain.all.keys('name', 'id');
+        expect(product.name.toLowerCase().includes(searchTerm)).to.be.true;
       });
     });
 
-    describe('When there are no product with matching names', () => {
+    it('otherwise it throws a "Product not found" error.', async () => {
       const searchTerm = 'xablau';
-
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductsWhereNameLike(searchTerm), []]));
-      after(() => connection.execute.restore());
-      
-      it('it throws a "Product not found" error.', async () => {
-        try {
-          await productsService.getByName(searchTerm);
-        } catch (error) {
-          expect(error).to.be.an('object').that.deep.equals(expressError.productNotFound);
-        }
-      });
-    })
+      sinon.stub(connection, 'execute').resolves([mocks.selectProductsWhereNameLike(searchTerm), []]);
+      await expect(productsService.getByName(searchTerm))
+        .to.be.rejectedWith(expressError.productNotFound.message);
+    });
   });
 
   describe('Tests the add function.', () => {
-    describe('When a product name is added', () => {
+    it('When a name is passed it returns an object containg the added product.', async () => {
       const { insertId } = mocks.resultSetHeader;
       const productName = 'Stinky Cheese';
-
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.resultSetHeader, undefined]));
-      after(() => connection.execute.restore());
-      
-      it('it returns an object containg the added product', async () => {
-        const addedProduct = await productsService.add(productName);
-        expect(addedProduct).to.be.an('object').that.deep.equals({ id: insertId, name: productName });
-      });
+      sinon.stub(connection, 'execute').resolves([mocks.resultSetHeader, undefined]);
+      const addedProduct = await productsService.add(productName);
+      expect(addedProduct).to.be.an('object').that.deep.equals({ id: insertId, name: productName });
     });
   });
 
   describe('Tests the edit function.', () => {
-    describe('When a product with an existing id is passed', () => {
+    it('If a product with id exists it returns the edited product,', async () => {
       const editedProduct = { id: 1, name: 'Thor\'s Screwdriver' };
-      
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductWhereIdEquals(editedProduct.id), undefined]));
-      after(() => connection.execute.restore());
-
-      it('it returns the edited product.', async () => {
-        const returnedProduct = await productsService.edit(editedProduct)
-        expect(returnedProduct).to.deep.equal(editedProduct);
-      });
+      sinon.stub(connection, 'execute')
+        .resolves([mocks.selectProductWhereIdEquals(editedProduct.id), undefined]);
+      expect(await productsService.edit(editedProduct)).to.deep.equal(editedProduct);
     });
 
-    describe('When a product with an unregistered id is passed', () => {
+    it('otherwise it throws a "Product not found" error.', async () => {
       const editedProduct = { id: 9999, name: 'Thor\'s Screwdriver' };
-      
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductWhereIdEquals(editedProduct.id), undefined]));
-      after(() => connection.execute.restore());
-      
-      it('it throws a "Product not found" error.', async () => {
-        try {
-          await productsService.edit(editedProduct);
-        } catch (error) {
-          expect(error).to.be.an('object').that.deep.equals(expressError.productNotFound);
-        }
-      });
+      sinon.stub(connection, 'execute')
+        .resolves([mocks.selectProductWhereIdEquals(editedProduct.id), undefined]);
+      await expect(productsService.edit(editedProduct))
+        .to.be.rejectedWith(expressError.productNotFound.message);
     });
   });
 
   describe('Tests the remove function.', () => {
-   describe('When an existing product id is passed', () => {
+    it('If the product id exists it returns undefined,', async () => {
       const productId = 1;
-      
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductWhereIdEquals(productId), undefined]));
-      after(() => connection.execute.restore());
-
-      it('it returns undefined.', async () => {
-        const returnedProduct = await productsService.remove(productId)
-        expect(returnedProduct).to.equal(undefined);
-      });
+      sinon.stub(connection, 'execute')
+        .resolves([mocks.selectProductWhereIdEquals(productId), undefined]);
+      expect(await productsService.remove(productId)).to.equal(undefined);
     });
 
-    describe('When a product with an unregistered id is passed', () => {
+    it('otherwise it throws a "Product not found" error.', async () => {
       const productId = 9999;
-      
-      before(() => sinon.stub(connection, 'execute')
-        .resolves([mocks.selectProductWhereIdEquals(productId), undefined]));
-      after(() => connection.execute.restore());
-      
-      it('it throws a "Product not found" error.', async () => {
-        try {
-          await productsService.remove(productId);
-        } catch (error) {
-          expect(error).to.be.an('object').that.deep.equals(expressError.productNotFound);
-        }
-      });
+      sinon.stub(connection, 'execute')
+        .resolves([mocks.selectProductWhereIdEquals(productId), undefined]);
+      await expect(productsService.remove(productId))
+        .to.be.rejectedWith(expressError.productNotFound.message);
     });
   });
 });
