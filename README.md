@@ -1,7 +1,7 @@
-# Store Manager :department_store:
+# Store Manager
 
-<details> :brazil:
-<summary>Versão em Português</summary>
+<details> 
+<summary>:brazil: Versão em Português</summary>
 
 ## Objetivo
 
@@ -18,10 +18,73 @@ Essa aplicação não usa recursos armazenáveis em cache, então ainda não é 
 Ela foi desenvolvida utilizando o banco de dados MySQL e pacotes Node.js como express, express-rescue, mysql2, mocha, chai, chai-as-promised e sinon. <br />
 A arquitetura de software foi construida usando o padrão Model-Service-Control.
 
+## Executando a aplicação localmente
+
+- Para instalar os containers docker:
+
+```
+docker-compose up -d
+```
+
+- Executar o terminal do container:
+
+```
+docker attach store_manager
+```
+
+- Instalar as dependências, criar e popular o banco de dados:
+
+```
+npm install && npm run migration && npm run seed
+```
+
+- Inicializar a aplicação:
+
+```
+npm start
+```
+
+- Executar os testes unitários:
+
+```
+npm run test:mocha
+```
+
+<br />
+
+## Endpoints
+
+### Produtos
+
+| Método   | URL                                          |
+| -------- | -------------------------------------------- |
+| `GET`    | http://localhost:3000/products               |
+| `GET`    | http://localhost:3000/products/:id           |
+| `GET`    | http://localhost:3000/products/search?q=name |
+| `PUT`    | http://localhost:3000/products/:id           |
+| `POST`   | http://localhost:3000/products               |
+| `DELETE` | http://localhost:3000/products/:id           |
+
+### Vendas
+
+| Método   | URL                             |
+| -------- | ------------------------------- |
+| `GET`    | http://localhost:3000/sales     |
+| `GET`    | http://localhost:3000/sales/:id |
+| `PUT`    | http://localhost:3000/sales/:id |
+| `POST`   | http://localhost:3000/sales     |
+| `DELETE` | http://localhost:3000/sales/:id |
+
+<br />
+
+## Cobertura de testes unitários
+
+![testcoverage](./readme/test-coverage-ss.png)
+
 </details>
 
-<details open> :us:
-<summary>English Version</summary>
+<details open> 
+<summary>:us: English Version</summary>
 
 ## Objective
 
@@ -39,12 +102,67 @@ This application doesn't use cacheable resources, so it's not quite a RESTful ap
 It was developed using MySQL database and Node.js packages such as express, express-rescue, mysql2, mocha, chai, chai-as-promised e sinon. <br />
 The software architecture was built following the Model-Service-Control standard.
 
-</details>
+## Running the application locally
 
-## Test coverage / Cobertura de testes
+- To install the docker containers:
+
+```
+docker-compose up -d
+```
+
+- Run the container terminal:
+
+```
+docker attach store_manager
+```
+
+- Install dependencies, create and populate the database:
+
+```
+npm install && npm run migration && npm run seed
+```
+
+- Start the application:
+
+```
+npm start
+```
+
+- Run unit tests:
+
+```
+npm run test:mocha
+```
+
+<br />
+
+## Endpoints
+
+### Products
+
+| Method   | URL                                          |
+| -------- | -------------------------------------------- |
+| `GET`    | http://localhost:3000/products               |
+| `GET`    | http://localhost:3000/products/:id           |
+| `GET`    | http://localhost:3000/products/search?q=name |
+| `PUT`    | http://localhost:3000/products/:id           |
+| `POST`   | http://localhost:3000/products               |
+| `DELETE` | http://localhost:3000/products/:id           |
+
+### Sales
+
+| Method   | URL                             |
+| -------- | ------------------------------- |
+| `GET`    | http://localhost:3000/sales     |
+| `GET`    | http://localhost:3000/sales/:id |
+| `PUT`    | http://localhost:3000/sales/:id |
+| `POST`   | http://localhost:3000/sales     |
+| `DELETE` | http://localhost:3000/sales/:id |
+
+<br />
+
+## Unit tests coverage
 
 ![testcoverage](./readme/test-coverage-ss.png)
 
-## Approved requirements / Requisitos aprovados
-
-![approvedrequirements](./readme/approved-requirements-ss.png)
+</details>
