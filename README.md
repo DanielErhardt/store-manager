@@ -1,7 +1,7 @@
 # Store Manager :department_store:
 
-<details> :brazil:
-<summary>Versão em Português</summary>
+<details> 
+<summary>:brazil: Versão em Português</summary>
 
 ## Objetivo
 
@@ -20,8 +20,8 @@ A arquitetura de software foi construida usando o padrão Model-Service-Control.
 
 </details>
 
-<details open> :us:
-<summary>English Version</summary>
+<details open> 
+<summary>:us: English Version</summary>
 
 ## Objective
 
