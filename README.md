@@ -99,7 +99,7 @@ To build an API for managing the database of a store's stock and sales that:
 ## Observations
 
 This application doesn't use cacheable resources, so it's not quite a RESTful app. <br />
-It was developed using MySQL database and Node.js packages such as express, express-rescue, mysql2, mocha, chai, chai-as-promised e sinon. <br />
+It was developed using MySQL database and Node.js packages such as express, express-rescue, mysql2, mocha, chai, chai-as-promised and sinon. <br />
 The software architecture was built following the Model-Service-Control standard.
 
 ## Running the application locally
