@@ -18,6 +18,8 @@ Essa aplicação não usa recursos armazenáveis em cache, então ainda não é 
 Ela foi desenvolvida utilizando o banco de dados MySQL e pacotes Node.js como express, express-rescue, mysql2, mocha, chai, chai-as-promised e sinon. <br />
 A arquitetura de software foi construida usando o padrão Model-Service-Control.
 
+- Todos os arquivos no diretório raiz, com exceção do app.js e README.md, foram criados e configurados pela Trybe.
+
 ## Executando a aplicação localmente
 
 - Para instalar os containers docker:
@@ -101,6 +103,8 @@ To build an API for managing the database of a store's stock and sales that:
 This application doesn't use cacheable resources, so it's not quite a RESTful app. <br />
 It was developed using MySQL database and Node.js packages such as express, express-rescue, mysql2, mocha, chai, chai-as-promised and sinon. <br />
 The software architecture was built following the Model-Service-Control standard.
+
+- All files in the root directory, with the exception of app.js and README.md, were created and configured by Trybe.
 
 ## Running the application locally
 
