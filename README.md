@@ -58,24 +58,24 @@ npm run test:mocha
 
 ### Produtos
 
-| Método   | URL                                          |
-| -------- | -------------------------------------------- |
-| `GET`    | http://localhost:3000/products               |
-| `GET`    | http://localhost:3000/products/:id           |
-| `GET`    | http://localhost:3000/products/search?q=name |
-| `PUT`    | http://localhost:3000/products/:id           |
-| `POST`   | http://localhost:3000/products               |
-| `DELETE` | http://localhost:3000/products/:id           |
+| Requisição | URL                                          |
+| ---------- | -------------------------------------------- |
+| `GET`      | http://localhost:3000/products               |
+| `GET`      | http://localhost:3000/products/:id           |
+| `GET`      | http://localhost:3000/products/search?q=name |
+| `PUT`      | http://localhost:3000/products/:id           |
+| `POST`     | http://localhost:3000/products               |
+| `DELETE`   | http://localhost:3000/products/:id           |
 
 ### Vendas
 
-| Método   | URL                             |
-| -------- | ------------------------------- |
-| `GET`    | http://localhost:3000/sales     |
-| `GET`    | http://localhost:3000/sales/:id |
-| `PUT`    | http://localhost:3000/sales/:id |
-| `POST`   | http://localhost:3000/sales     |
-| `DELETE` | http://localhost:3000/sales/:id |
+| Requisição | URL                             |
+| ---------- | ------------------------------- |
+| `GET`      | http://localhost:3000/sales     |
+| `GET`      | http://localhost:3000/sales/:id |
+| `PUT`      | http://localhost:3000/sales/:id |
+| `POST`     | http://localhost:3000/sales     |
+| `DELETE`   | http://localhost:3000/sales/:id |
 
 <br />
 
@@ -144,7 +144,7 @@ npm run test:mocha
 
 ### Products
 
-| Method   | URL                                          |
+| Request  | URL                                          |
 | -------- | -------------------------------------------- |
 | `GET`    | http://localhost:3000/products               |
 | `GET`    | http://localhost:3000/products/:id           |
@@ -155,7 +155,7 @@ npm run test:mocha
 
 ### Sales
 
-| Method   | URL                             |
+| Request  | URL                             |
 | -------- | ------------------------------- |
 | `GET`    | http://localhost:3000/sales     |
 | `GET`    | http://localhost:3000/sales/:id |
